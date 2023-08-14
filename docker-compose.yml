@@ -2,7 +2,7 @@ version: '3'
 
 services:
   nginx:
-    image: pppy/s3-nginx-proxy
+    image: saiqulhaq/cloudfront-nginx-proxy
     build: .
     ports:
       - 127.0.0.1:80:80
