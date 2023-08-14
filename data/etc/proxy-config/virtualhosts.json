@@ -1,7 +1,7 @@
 [
   {
-    "bucket": "a.ppy.sh",
-    "region": "us-west-1",
+    "cacheKey": "proxy_cache_key_can_use_bucket_name",
+    "upstream": "xxxxx.cloudfront.net",
     "hostnames": [
       "a.ppy.sh"
     ],
@@ -9,18 +9,6 @@
     "defaultStatusCode": 200,
     "cache": {
       "200": "60m"
-    },
-    "secrets": "s3"
-  },
-  {
-    "bucket": "assets.ppy.sh",
-    "upstream": "s3-us-west-1.amazonaws.com",
-    "hostnames": [
-      "assets.ppy.sh"
-    ],
-    "cache": {
-      "200": "336h"
-    },
-    "secrets": "s3"
+    }
   }
 ]

@@ -1,3 +1,23 @@
+# NOTE
+This image is supposed to proxy to AWS CloudFront, not S3
+set the `upstream` key in the virtualhost json setting, for example:  
+
+```json
+  {
+    "cacheKey": "random-key",
+    "upstream": "xxxxx.cloudfront.net",
+    "hostnames": [
+      "proxy.domain.com"
+    ],
+    "defaultPath": "/blank.png",
+    "defaultStatusCode": 200,
+    "cache": {
+      "200": "60m"
+    }
+  }
+
+```
+
 # s3-nginx-proxy [![dev chat](https://discordapp.com/api/guilds/188630481301012481/widget.png?style=shield)](https://discord.gg/ppy)
 
 A feature-rich Amazon S3 NGINX-based proxy, running in Docker and Kubernetes.
@@ -37,7 +57,6 @@ Granting too much permissions may lead to security risks (such as listing the en
 ## Docker
 
 Edit `./data/etc/proxy-config/virtualhosts.json` and `./data/etc/proxy-config/cache.json` to match your desired settings.
-Put your AWS credentials in `./data/etc/proxy-config/secrets.json` (see template in `./data/etc/proxy-config/secrets.json.example`).
 Start the NGINX and config generator containers with `docker-compose up -d`.
 
 ## Kubernetes (Helm)
@@ -76,12 +95,6 @@ The following metrics are exposed:
 - `nginx_http_request_duration_seconds`: HTTP request latency (histogram)
 - `nginx_http_connections`: Number of HTTP connections (gauge)
 - `nginx_upstream_cache_status`: Number of HTTP requests per upstream cache status (counter)
-
-# Breaking Changes
-
-## 2022.705.0
-
-Secrets have been moved to `./data/etc/proxy-config/secrets.json`, and key for each secret set need to be added to the virtual hosts config (see default `./data/etc/proxy-config/virtualhosts.json`).
 
 # Contributing
 

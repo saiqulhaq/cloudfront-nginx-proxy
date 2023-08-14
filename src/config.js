@@ -1,6 +1,5 @@
 const fs = require("fs");
 
-const secrets = require("/etc/proxy-config/secrets.json");
 const virtualHosts = require("/etc/proxy-config/virtualhosts.json");
 const metrics = require("/etc/proxy-config/metrics.json");
 
@@ -78,24 +77,8 @@ for(const virtualHost of virtualHosts) {
     .map(([code, expiry]) => `  proxy_cache_valid ${code} ${expiry};`)
     .join("\n");
 
-  const secret = secrets[virtualHost.secrets];
-  let authNginx = "";
-  if (secret) {
-    authNginx = `
-      set_by_lua        $now            "return ngx.cookie_time(ngx.time())";
-      set               $string_to_sign "GET\\n\\n\\n\${now}\\n/${virtualHost.bucket}$uri_path";
-      set_hmac_sha1     $aws_signature  "${secret.secretKey}" "$string_to_sign";
-      set_encode_base64 $aws_signature  "$aws_signature";
-      proxy_set_header  Date            "$now";
-      proxy_set_header  Authorization   "AWS ${secret.accessKey}:$aws_signature";
-    `;
-  }
-  else if (virtualHost.secrets) {
-    throw new Error('Missing secret for ' + virtualHost.hostnames.join(','));
-  }
-
-  const upstream = virtualHost.upstream || `s3-${virtualHost.region}.amazonaws.com`;
-  const cacheKey = `${virtualHost.cacheKey || `${virtualHost.bucket}$uri_path$args`}`;
+  const upstream = virtualHost.upstream;
+  const cacheKey = `${virtualHost.cacheKey}$uri_path$args`;
   const defaultStatusCode = virtualHost.defaultStatusCode || 404;
 
   configBlocks.push(`
@@ -134,13 +117,12 @@ ${vhostCacheNginx}
       return ngx.var.uri_path:gsub("+", "%%2B");
     }
 
-    ${authNginx}
-
     error_page 404 =${defaultStatusCode} @fallback;
     error_page 403 =${defaultStatusCode} @fallback;
 
     proxy_set_header       Content-Type  "";
-    proxy_set_header       Host          "${virtualHost.bucket}.${upstream}";
+    proxy_set_header       Host          "${upstream}";
+    proxy_ssl_server_name  on;
     proxy_intercept_errors on;
     proxy_pass             "https://${upstream}$uri_path";
 
