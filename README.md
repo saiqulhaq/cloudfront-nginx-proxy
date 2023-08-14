@@ -61,7 +61,7 @@ Start the NGINX and config generator containers with `docker-compose up -d`.
 
 ## Kubernetes (Helm)
 
-Helm chart is available at https://github.com/ppy/helm-charts/tree/master/osu/s3-nginx-proxy
+Helm chart is available at https://github.com/saiqulhaq/helm-charts/tree/master/osu/cloudfront-nginx-proxy
 
 ## Purge configuration
 
