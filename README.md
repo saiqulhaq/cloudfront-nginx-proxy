@@ -1,5 +1,19 @@
-# NOTE
-This image is supposed to proxy to AWS CloudFront, not S3
+# CloudFront-nginx-proxy [![dev chat](https://discordapp.com/api/guilds/188630481301012481/widget.png?style=shield)](https://discord.gg/ppy)
+
+This image is supposed to proxy to AWS CloudFront, not S3.
+This is for easy replacement of CloudFront with CloudFlare running in Docker and Kubernetes.  
+We can save the AWS cost first, then optimize the app later by deploying https://github.com/ppy/s3-nginx-proxy with full tests of our system  
+
+# Features
+
+- Cache duration based on HTTP status
+- Auto-reload after every configuration update (in production too)
+- Single-key cache purge support (using HTTP DELETE)
+- Cloudflare cache purging support
+- Observability (Prometheus-compatible)
+
+# Usage
+
 set the `upstream` key in the virtualhost json setting, for example:  
 
 ```json
@@ -17,42 +31,6 @@ set the `upstream` key in the virtualhost json setting, for example:
   }
 
 ```
-
-# s3-nginx-proxy [![dev chat](https://discordapp.com/api/guilds/188630481301012481/widget.png?style=shield)](https://discord.gg/ppy)
-
-A feature-rich Amazon S3 NGINX-based proxy, running in Docker and Kubernetes.
-
-# Features
-
-- Authentication to private buckets
-- Multiple buckets
-- Multiple domains per bucket (with shared cache)
-- Multiple regions
-- Cache duration based on HTTP status
-- Auto-reload after every configuration update (in production too)
-- Single-key cache purge support (using HTTP DELETE)
-- Cloudflare cache purging support
-- Third-party S3 providers support
-- Observability (Prometheus-compatible)
-
-# Usage
-
-Recommended setup is to create an AWS IAM user for each `s3-nginx-proxy` deployment. You should then attach a policy to exclusively grant it the `GetObject` permission on the required buckets, such as:
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "VisualEditor0",
-      "Effect": "Allow",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::thepoon.ppy.sh/*"
-    }
-  ]
-}
-```
-
-Granting too much permissions may lead to security risks (such as listing the entire bucket content). Be careful!
 
 ## Docker
 
@@ -79,14 +57,6 @@ It can be enabled by setting the following variables in the cache config:
   Head to your [account's API Keys](https://dash.cloudflare.com/profile/api-tokens) and create a custom token with the `Zone > Cache Purge > Purge` permission enabled on the desired zone.
 - `purgeCloudflareZoneId` is found on your domain's home page on your Cloudflare dashboard.
 
-## Third-Party S3 Providers
-
-S3 endpoint is computed from the `region` property if you're using Amazon S3. For other providers, `upstream` can be used instead.
-
-For example, endpoint for DigitalOcean Spaces in region NYC3 is `nyc3.digitaloceanspaces.com`.
-
-Be aware however that you will not be benifitting of the added security of the Amazon S3 very granular permissions (may make your bucket listing public!).
-
 ## Observability
 
 A Prometheus-compatible metrics endpoint can be enabled in `metrics.json`.  
@@ -107,6 +77,4 @@ Note that while we already have certain standards in place, nothing is set in st
 
 # Licence
 
-The osu! client code, framework, and server-side components are licensed under the [MIT licence](https://opensource.org/licenses/MIT). Please see [the licence file](LICENCE) for more information. [tl;dr](https://tldrlegal.com/license/mit-license) you can do whatever you want as long as you include the original copyright and license notice in any copy of the software/source.
-
-Please note that this *does not cover* the usage of the "osu!" or "ppy" branding in any software, resources, advertising or promotion, as this is protected by trademark law.
+[MIT licence](https://opensource.org/licenses/MIT). Please see [the licence file](LICENCE) for more information. [tl;dr](https://tldrlegal.com/license/mit-license) you can do whatever you want as long as you include the original copyright and license notice in any copy of the software/source.
