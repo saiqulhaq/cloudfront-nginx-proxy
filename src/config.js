@@ -120,6 +120,7 @@ ${vhostCacheNginx}
     error_page 404 =${defaultStatusCode} @fallback;
     error_page 403 =${defaultStatusCode} @fallback;
 
+    proxy_set_header Referer "https://proxy.hungryhub.com";
     proxy_set_header       Content-Type  "";
     proxy_set_header       Host          "${upstream}";
     proxy_ssl_server_name  on;
